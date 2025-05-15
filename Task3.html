@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Tic-Tac-Toe</title>
+  <style>
+    /* Sparkling background */
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      overflow-x: hidden;
+      background: radial-gradient(#0d0d0d, #000000);
+      color: white;
+      height: 100vh;
+      position: relative;
+    }
+
+    .stars {
+      width: 2px;
+      height: 2px;
+      background: white;
+      position: absolute;
+      animation: twinkle 2s infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+
+    .navbar {
+      background-color: rgba(44, 62, 80, 0.9);
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 0 10px #00ffff;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .navbar a {
+      color: #00ffff;
+      text-decoration: none;
+      margin-left: 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .navbar a:hover {
+      text-decoration: underline;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 36px;
+      color: #00ffff;
+      text-shadow: 0 0 5px #00ffff;
+    }
+
+    .widget {
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      max-width: 500px;
+      margin: 30px auto 50px auto;
+      border-radius: 15px;
+      box-shadow: 0 0 25px 5px #00ffff;
+      position: relative;
+      z-index: 5;
+    }
+
+@keyframes sparkle {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+
+    .mode-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    button {
+      width: 280px;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      background-color: #00aaff;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #0088cc;
+      transform: scale(1.05);
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      gap: 5px;
+      justify-content: center;
+      margin: 20px auto;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      font-size: 50px;
+      font-weight: bold;
+      border-radius: 10px;
+      border: 2px solid white;
+      background: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s;
+      user-select: none;
+    }
+
+    .cell:hover {
+      transform: scale(1.1);
+    }
+
+    .cell.x {
+      color: #ff3cac;
+      text-shadow: 0 0 10px #ff3cac;
+    }
+
+    .cell.o {
+      color: #00f2fe;
+      text-shadow: 0 0 10px #00f2fe;
+    }
+
+    #status {
+      text-align: center;
+      font-size: 20px;
+      margin-top: 10px;
+      color: #ffffff;
+      min-height: 28px;
+    }
+
+    #turn-indicator {
+      text-align: center;
+      font-size: 22px;
+      margin-top: 10px;
+      color: #00ffff;
+      font-weight: bold;
+      text-shadow: 0 0 5px #00ffff;
+      min-height: 28px;
+    }
+
+    #help-section {
+      padding: 20px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      max-width: 600px;
+      margin: auto;
+      margin-top: 20px;
+      color: #fff;
+      line-height: 1.5;
+    }
+
+    /* Sparkle stars generation */
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      opacity: 0.5;
+      animation: starTwinkle 2s infinite;
+    }
+
+    @keyframes starTwinkle {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.5); }
+    }
+
+    /* Light mode styles */
+body.light-mode {
+  background: radial-gradient(#ffffff, #cccccc);
+  color: #000000;
+}
+
+body.light-mode .navbar {
+  background-color: rgba(200, 220, 230, 0.9);
+  color: #000000;
+  box-shadow: 0 0 10px #0088cc;
+}
+
+body.light-mode h1, 
+body.light-mode #mode-display, 
+body.light-mode #turn-indicator {
+  color: #0088cc;
+  text-shadow: none;
+}
+
+body.light-mode .widget {
+  background: rgba(255, 255, 255, 0.9);
+  color: #000;
+  box-shadow: 0 0 25px 5px #0088cc;
+}
+
+body.light-mode .cell {
+  background: #f0f0f0;
+  border: 2px solid #0088cc;
+  color: #0088cc;
+}
+
+body.light-mode .cell.x {
+  color: #cc0055;
+  text-shadow: none;
+}
+
+body.light-mode .cell.o {
+  color: #0099cc;
+  text-shadow: none;
+}
+
+/* For sparkle stars in light mode, keep colors but maybe reduce opacity */
+body.light-mode .star {
+  opacity: 0.8;
+}
+
+  </style>
+</head>
+<body>
+  <!-- Sparkle stars -->
+  <script>
+    for (let i = 0; i < 100; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.top = `${Math.random() * 100}vh`;
+      star.style.left = `${Math.random() * 100}vw`;
+      star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+      document.body.appendChild(star);
+    }
+  </script>
+
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <h2>Tic-Tac-Toe</h2>
+    <div>
+      <a onclick="goHome()">Home</a>
+      <a onclick="showHelp()">Help</a>
+      <a onclick="showSettings()">Settings</a>
+    </div>
+  </div>
+
+  <h1 id="main-title">Welcome to Tic-Tac-Toe</h1>
+
+  <!-- MAIN CONTAINER -->
+  <div class="widget">
+    <!-- MENU -->
+    <div id="menu" class="mode-container">
+      <button onclick="startGame('computer')">Play with Computer</button>
+      <button onclick="startGame('friend')">Play with Friend</button>
+      <button onclick="showComingSoon('Online Players feature coming soon!')">Play with Online Players</button>
+      <button onclick="showComingSoon('Invite your friends - coming soon!')">Play Online with Our Friends</button>
+    </div>
+
+    <!-- GAME AREA -->
+    <div id="game-area" style="display:none;">
+      <p id="mode-display" style="text-align:center; font-weight: bold; font-size: 20px; color: #00ffff;"></p>
+      <div class="board" id="board"></div>
+      <p id="turn-indicator"></p>
+      <p id="status"></p>
+      <div style="text-align: center;">
+        <button onclick="resetGame()">Restart Game</button>
+      </div>
+    </div>
+
+    <!-- COMING SOON -->
+    <div id="coming-soon" style="display:none;">
+      <p id="coming-text" style="text-align: center; font-size: 18px;"></p>
+      <div style="text-align: center;">
+        <button onclick="goHome()">Go Back</button>
+      </div>
+    </div>
+
+    <!-- HELP SECTION -->
+    <div id="help-section" style="display:none;">
+      <h3 style="text-align: center;">How to Play</h3>
+      <ul>
+        <li>Choose a mode: play with computer or a friend.</li>
+        <li>Click on a cell to place your symbol.</li>
+        <li>The first to get 3 in a row wins!</li>
+        <li>If all cells are filled, it's a draw.</li>
+      </ul>
+      <div style="text-align: center;">
+        <button onclick="goHome()">Back to Home</button>
+      </div>
+    </div>
+
+    <!-- SETTINGS SECTION -->
+    <div id="settings-section" style="display:none; color:#fff; text-align:center;">
+  <h3>Settings</h3>
+  <p>
+    <label>
+      <input type="checkbox" id="mode-toggle" onclick="toggleMode()" />
+      Toggle Dark / Light Mode
+    </label>
+  </p>
+  <button onclick="goHome()">Back to Home</button>
+</div>
+
+  </div>
+
+  <!-- SCRIPT -->
+  <script>
+    let board = ["", "", "", "", "", "", "", "", ""];
+    let currentPlayer = "X";
+    let gameActive = true;
+    let gameMode = "";
+
+    function startGame(mode) {
+  if (mode === 'computer') {
+    const playerName = prompt("Enter your name:", "Player 1") || "Player 1";
+    const computerName = "Computer";
+    window.playerNames = [playerName, computerName];
+  } else if (mode === 'friend') {
+    const player1 = prompt("Enter name for Player 1:", "Player 1") || "Player 1";
+    const player2 = prompt("Enter name for Player 2:", "Player 2") || "Player 2";
+    window.playerNames = [player1, player2];
+  }
+
+  gameMode = mode;
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("game-area").style.display = "block";
+  document.getElementById("coming-soon").style.display = "none";
+  document.getElementById("help-section").style.display = "none";
+  document.getElementById("settings-section").style.display = "none";
+  document.getElementById("main-title").textContent = "";
+  document.getElementById("mode-display").textContent =
+    mode === "computer" ? `Playing with Computer (${window.playerNames[0]})` : `Playing with Friend (${window.playerNames[0]} vs ${window.playerNames[1]})`;
+  resetGame();
+  updateTurnIndicator();
+}
+
+
+    function createBoard() {
+      const boardElement = document.getElementById("board");
+      boardElement.innerHTML = "";
+      board.forEach((val, i) => {
+        const cell = document.createElement("div");
+        cell.className = "cell";
+        if (val === "X") cell.classList.add("x");
+        if (val === "O") cell.classList.add("o");
+        cell.textContent = val;
+        cell.addEventListener("click", () => handleClick(i));
+        boardElement.appendChild(cell);
+      });
+    }
+
+    function handleClick(index) {
+      if (!gameActive || board[index] !== "") return;
+      board[index] = currentPlayer;
+      createBoard();
+
+      if (checkWin()) {
+        document.getElementById("status").textContent = `${currentPlayer} wins!`;
+        document.getElementById("turn-indicator").textContent = "";
+        gameActive = false;
+        return;
+      }
+
+      if (board.every(cell => cell !== "")) {
+        document.getElementById("status").textContent = "It's a draw!";
+        document.getElementById("turn-indicator").textContent = "";
+        gameActive = false;
+        return;
+      }
+
+      currentPlayer = currentPlayer === "X" ? "O" : "X";
+      updateTurnIndicator();
+
+      if (gameMode === "computer" && currentPlayer === "O" && gameActive) {
+        setTimeout(computerMove, 500);
+      }
+    }
+
+    function computerMove() {
+  if (!gameActive) return; // Prevent move if game is over
+  const available = board.map((val, i) => (val === "" ? i : null)).filter(i => i !== null);
+  const move = available[Math.floor(Math.random() * available.length)];
+  handleClick(move);
+}
+
+
+    function checkWin() {
+      const winPatterns = [
+        [0,1,2],[3,4,5],[6,7,8],
+        [0,3,6],[1,4,7],[2,5,8],
+        [0,4,8],[2,4,6]
+      ];
+      return winPatterns.some(([a,b,c]) => board[a] && board[a] === board[b] && board[b] === board[c]);
+    }
+
+    function resetGame() {
+      board = ["", "", "", "", "", "", "", "", ""];
+      currentPlayer = "X";
+      gameActive = true;
+      document.getElementById("status").textContent = "";
+      createBoard();
+      updateTurnIndicator();
+    }
+
+    function updateTurnIndicator() {
+  if (!gameActive) {
+    document.getElementById("turn-indicator").textContent = "";
+    return;
+  }
+  const currentPlayerName = currentPlayer === "X" ? window.playerNames[0] : window.playerNames[1];
+  document.getElementById("turn-indicator").textContent = `${currentPlayerName}'s Turn (${currentPlayer})`;
+}
+
+
+    function showComingSoon(msg) {
+      document.getElementById("menu").style.display = "none";
+      document.getElementById("game-area").style.display = "none";
+      document.getElementById("help-section").style.display = "none";
+      document.getElementById("settings-section").style.display = "none";
+      document.getElementById("coming-soon").style.display = "block";
+      document.getElementById("coming-text").textContent = msg;
+      document.getElementById("main-title").textContent = "";
+    }
+
+    function showHelp() {
+      document.getElementById("menu").style.display = "none";
+      document.getElementById("game-area").style.display = "none";
+      document.getElementById("coming-soon").style.display = "none";
+      document.getElementById("settings-section").style.display = "none";
+      document.getElementById("help-section").style.display = "block";
+      document.getElementById("main-title").textContent = "Help";
+    }
+
+    function showSettings() {
+      document.getElementById("menu").style.display = "none";
+      document.getElementById("game-area").style.display = "none";
+      document.getElementById("coming-soon").style.display = "none";
+      document.getElementById("help-section").style.display = "none";
+      document.getElementById("settings-section").style.display = "block";
+      document.getElementById("main-title").textContent = "Settings";
+    }
+
+    function goHome() {
+      document.getElementById("menu").style.display = "flex";
+      document.getElementById("game-area").style.display = "none";
+      document.getElementById("help-section").style.display = "none";
+      document.getElementById("coming-soon").style.display = "none";
+      document.getElementById("settings-section").style.display = "none";
+      document.getElementById("main-title").textContent = "Welcome to Tic-Tac-Toe";
+      resetGame();
+    }
+    // Existing variables and functions remain unchanged
+
+// New function to toggle dark/light mode
+function toggleMode() {
+  const body = document.body;
+  const isLight = body.classList.toggle('light-mode');
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme');
+  if (savedTheme === 'light') document.body.classList.add('light-mode');
+  document.getElementById('mode-toggle').checked = savedTheme === 'light';
+});
+
+
+// Update sparkle stars creation to use random colors
+const colors = ['#ff3cac', '#00f2fe', '#ffea00', '#00ff85', '#ff6600', '#8a2be2'];
+for (let i = 0; i < 100; i++) {
+  const star = document.createElement('div');
+  star.className = 'star';
+  star.style.top = `${Math.random() * 100}vh`;
+  star.style.left = `${Math.random() * 100}vw`;
+  star.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+  star.style.animationDuration = `${Math.random() * 3 + 2}s`;
+  document.body.appendChild(star);
+}
+
+
+  </script>
+</body>
+</html>
